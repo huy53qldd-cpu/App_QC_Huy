@@ -6,14 +6,13 @@ import pandas as pd
 def load_data():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     
-    # Sửa dòng này: Chuyển Secrets thành một Dictionary (bản đồ dữ liệu) chuẩn
-    creds_info = dict(st.secrets["gcp_service_account"])
+    # Lấy trực tiếp toàn bộ Secrets (vì mình không đặt tên nhãn [gcp...] nữa)
+    creds_info = dict(st.secrets)
     
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_info, scope)
     client = gspread.authorize(creds)
     sheet = client.open("data").sheet1
     return pd.DataFrame(sheet.get_all_records())
-
 st.title("🔍 Tra cứu Linh kiện QC")
 
 try:
