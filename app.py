@@ -2,21 +2,20 @@ import streamlit as st
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
+import json
 
-# 1. Hàm kết nối và lấy dữ liệu từ Google Sheets
 def load_data():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     
-    # Đọc trực tiếp file key.json trên GitHub
-    creds = ServiceAccountCredentials.from_json_keyfile_name("key.json", scope)
+    # Dùng thư viện json để đọc file chắc chắn 100% không bị lỗi định dạng
+    with open("key.json", "r", encoding="utf-8") as f:
+        creds_dict = json.load(f)
+        
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     client = gspread.authorize(creds)
-    
-    # Mở file Google Sheets tên là "data"
     sheet = client.open("data").sheet1
-    
     return pd.DataFrame(sheet.get_all_records())
 
-# 2. Cấu hình giao diện App
 st.set_page_config(page_title="App QC Hải Phòng", page_icon="🔍", layout="centered")
 
 st.title("🔍 Tra cứu Linh kiện QC")
@@ -25,9 +24,7 @@ st.markdown("---")
 try:
     df = load_data()
     
-    # Chuyển cột 'Mã LK' thành chuỗi để tìm kiếm chính xác
     df['Mã LK'] = df['Mã LK'].astype(str)
-
     list_ma_lk = df['Mã LK'].unique().tolist()
 
     ma_chon = st.selectbox(
@@ -50,7 +47,6 @@ try:
                 
             with col2:
                 gia = ket_qua.iloc[0]['Giá bán']
-                # Đã sửa lỗi thụt lề (IndentationError) chuẩn xác ở đây
                 try:
                     gia_so = float(gia)
                     st.metric(label="Giá bán", value=f"{gia_so:,.0f} VNĐ")
