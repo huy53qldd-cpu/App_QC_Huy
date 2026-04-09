@@ -1,21 +1,17 @@
 import streamlit as st
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
-import json
 
+# 1. Hàm kết nối siêu ngắn gọn (Không dùng oauth2client nữa)
 def load_data():
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    # gspread tự động đọc file key.json và cấp quyền luôn, chỉ tốn 1 dòng
+    gc = gspread.service_account(filename="key.json")
     
-    # Dùng thư viện json để đọc file chắc chắn 100% không bị lỗi định dạng
-    with open("key.json", "r", encoding="utf-8") as f:
-        creds_dict = json.load(f)
-        
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-    client = gspread.authorize(creds)
-    sheet = client.open("data").sheet1
+    # Mở file Google Sheets tên là "data"
+    sheet = gc.open("data").sheet1
     return pd.DataFrame(sheet.get_all_records())
 
+# 2. Cấu hình giao diện App
 st.set_page_config(page_title="App QC Hải Phòng", page_icon="🔍", layout="centered")
 
 st.title("🔍 Tra cứu Linh kiện QC")
