@@ -6,9 +6,10 @@ import pandas as pd
 # Hàm lấy dữ liệu
 def load_data():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    # Đọc file key.json chuẩn vừa dán ở Bước 1
+    # Lệnh này sẽ đọc đúng cái file key.json Huy vừa sửa
     creds = ServiceAccountCredentials.from_json_keyfile_name("key.json", scope)
     client = gspread.authorize(creds)
+    # Nhớ tên file Google Sheets của Huy phải là "data" nhé
     sheet = client.open("data").sheet1
     return pd.DataFrame(sheet.get_all_records())
     
