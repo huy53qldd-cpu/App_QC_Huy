@@ -5,11 +5,12 @@ import pandas as pd
 
 def load_data():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    # Lấy chìa khóa từ Secrets của Streamlit Cloud
-    creds_dict = st.secrets["gcp_service_account"]
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+    
+    # Sửa dòng này: Chuyển Secrets thành một Dictionary (bản đồ dữ liệu) chuẩn
+    creds_info = dict(st.secrets["gcp_service_account"])
+    
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_info, scope)
     client = gspread.authorize(creds)
-    # Mở file Google Sheets tên là "data"
     sheet = client.open("data").sheet1
     return pd.DataFrame(sheet.get_all_records())
 
