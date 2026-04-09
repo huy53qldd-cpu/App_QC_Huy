@@ -5,12 +5,12 @@ import pandas as pd
 
 # Hàm lấy dữ liệu
 def load_data():
-    # Đường dẫn quyền truy cập
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    
-    # Đọc trực tiếp file key.json nằm cùng thư mục trên GitHub
+    # Đọc file key.json chuẩn vừa dán ở Bước 1
     creds = ServiceAccountCredentials.from_json_keyfile_name("key.json", scope)
     client = gspread.authorize(creds)
+    sheet = client.open("data").sheet1
+    return pd.DataFrame(sheet.get_all_records())
     
     # Mở file Google Sheets (Huy nhớ đặt tên file Excel trên Drive đúng là "data" nhé)
     sheet = client.open("data").sheet1
